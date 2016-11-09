@@ -3,12 +3,21 @@
 import pip
 from shutil import copyfile, which
 import subprocess
+from argparse import ArgumentParser
 
 copyfile('config.ini.example', 'config.ini')
+
+parser = ArgumentParser()
+parser.add_argument("-n4j", "--with_neo4j",
+                    action="store_true",
+                    help="Install packages required by Neo4j graph")
+args = parser.parse_args()
 
 pip.main(['install', '--upgrade', '-r', 'requirements.txt'])
 subprocess.call(['conda', 'config', '--add', 'channels', 'conda-forge'])
 subprocess.call(['conda', 'install', '--yes', '--file', 'conda_requirements.txt'])
+if args.with_neo4j:
+    pip.main(['install', '--upgrade', '-r', 'neo4j_requirements.txt'])
 
 if which('unzip') == None:
     print('The following executables are needed and were not found: unzip')
